@@ -128,6 +128,23 @@
 		}
         function onClick(e, treeId, treeNode) {
             //alert(treeNode.name);
+            var result = getSelectNodeName();
+            mutexTable = $('#mutexTable');
+            mutexTable.bootstrapTable('removeAll');
+            termTable = $('#termTable');
+            termTable.bootstrapTable('removeAll');
+            seedTable = $('#seedTable');
+            seedTable.bootstrapTable('removeAll');
+             
+            if (JSON.stringify(result) != '{}') {
+                $("#className").val(result['child']);
+                $("#classPaName").val(result['parent']);
+                detail = getDetail(result['child']);
+                mutexTable.bootstrapTable('append', detail['mutex']);
+                termTable.bootstrapTable('append', detail['term']);
+                seedTable.bootstrapTable('append', detail['seed']);
+            }
+
         }
 		function onRename(e, treeId, treeNode, isCancel) {
 			showLog((isCancel ? "<span style='color:red'>":"") + "[ "+getTime()+" onRename ]&nbsp;&nbsp;&nbsp;&nbsp; " + treeNode.name + (isCancel ? "</span>":""));
@@ -200,6 +217,12 @@
 
 			$.fn.zTree.init($("#treeShow"), setting, zNodes);
 		});
+        $(function() {
+            $(window).scroll(function() {
+                var top = $(window).scrollTop();
+                $("#editInfo").animate({"top":top},50);
+            });
+        });
 		//-->
 	</script>
 
@@ -217,8 +240,8 @@
       <div class="col-md-4">
         <ul id ="treeShow" class="ztree"> </ul>
       </div><!-- /.col-lg-6 -->
-      <div class="col-md-8">
-          <div class="col-md-8" id="prepareEdit">
+      <div id="editInfo" class="col-md-8">
+          <div class="col-md-8">
             <div>
                 <label> 类名</label>
                 <input id='className' type="text" placeholder="类名"> </input>
@@ -430,7 +453,7 @@
                         success: function(data) {
                             if (data.msg == "ok") {
                                 alert("保存成功");
-                                window.location.reload();
+                                //window.location.reload();
                             } else {
                                 view(data.msg);
                             }

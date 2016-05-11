@@ -125,7 +125,8 @@ def index():
     rows = Mysql('kb', host=MYSQL_HOST).execute(sql)
 
     nodeTree = NodeTree()
-    root = nodeTree.rowsToTree(rows)
+    rank = {u'症状':1, u'测量':2, u'疾病':3, u'手术':4, u'化疗':5}
+    root = nodeTree.rowsToTree(rows, rank)
     js = nodeTree.toJson(root[0])
     print json.dumps(js)
     return {'msg':'ok', 'data':js}
@@ -266,4 +267,4 @@ def server_static(filePath):
 
 
 if __name__ == "__main__":
-    run(host='localhost', port=8080)
+    run(host='192.168.1.4', port=8080)

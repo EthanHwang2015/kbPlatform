@@ -9,9 +9,18 @@ class Node:
         self.parent = None
         self.name = name
         self.children = []
+        self.rank = 1
+
+    def getName(self):
+        return self.name
 
     def setParent(self, parent):
         self.parent = parent
+
+    def setChildren(self, children):
+        self.children = children
+        for child in self.children:
+            child.setParent(self)
 
     def addChild(self, child):
         self.children.append(child)
@@ -25,12 +34,18 @@ class Node:
 
     def hasParent(self):
         return self.parent is not None
+
+    def setRank(self, rank):
+        self.rank = rank
+
+    def getRank(self):
+        return self.rank
         
 class NodeTree:
     def __init__(self):
         pass
 
-    def rowsToTree(self, rows):
+    def rowsToTree(self, rows, rank={}):
         '''
         将形如( u'上腹痛', 1, u'上左腹痛')的数据处理成树
         '''
@@ -67,8 +82,23 @@ class NodeTree:
         if len(root) == 0:
             root.append(Node('root'))
 
+        for node in root:
+            children = node.getAllChildren()
+            for child in children:
+                self.sortChildren(child, rank)
         return root
 
+    def sortChildren(self, node, rank={}):
+        children = node.getAllChildren()
+        for child in children:
+            name = child.getName()
+            print name, rank
+            if name in rank:
+                child.setRank(rank[name])
+                print name, rank[name]
+        newChildren = sorted(children, key=lambda node: node.getRank())
+        node.setChildren(newChildren)
+        
     def findNode(self, name, root):
         '''
         name should be utf8
