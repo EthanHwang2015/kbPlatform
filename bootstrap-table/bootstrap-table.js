@@ -2339,6 +2339,9 @@
             return;
         }
         $.extend(this.data[params.index], params.row);
+        if (params.hasOwnProperty('_class')) {
+            this.data[params.index]._class = params._class;
+        }
         this.initSort();
         this.initBody(true);
     };

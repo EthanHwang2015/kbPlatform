@@ -82,14 +82,22 @@
                                     title: 'seed',
                                     align: 'center',
                             }, {
+                                    field: 'source',
+                                    title: 'source',
+                                    align: 'center',
+                            }, {
+                                    field: 'sentence_src',
+                                    title: 'sentence_src',
+                                    align: 'center',
+                            }, {
                      
-                                    field: 'sentence',
-                                    title: 'sentence',
-                                    /*
+                                    field: 'sentence_dest',
+                                    title: 'sentence_dest',
+                                    
                                     editable: {
                                         type: 'text'
                                     },
-                                    */
+                                    
                                     align: 'center',
                             }, {
                                 title: '标注',
@@ -117,89 +125,60 @@
             rowStyleMap = {};
             window.operateEvents = {
                 'click .checkOk': function (e, value, row, index) {
-                    /*
-                    table.bootstrapTable('hideRow', {
-                        index:index
+                    table.bootstrapTable('updateRow', {
+                        index:index,
+                        row: row,
+                        _class: 'success'
                     });
-                    */
-                    var curIndex = index;
                     
                     var rowData = table.bootstrapTable('getData')[index];
                     rowData['label'] = 1;
-                    table.bootstrapTable('refreshOptions', {
-                        //['active', 'success', 'info', 'warning', 'danger'];
-                        rowStyle: function (row, index) {
-                                if (index == curIndex) {
-                                    //submit data to mysql
-                                    color = 'success';
-                                    $.ajax({
-                                            url:'updateLabel',
-                                            data: JSON.stringify(rowData),
-                                            async : false,
-                                            type:'POST',
-                                            contentType: "application/json",
-                                            dataType:'json',
-                                            success: function(data) {
-                                                if (data.msg != "ok") {
-                                                    color = 'active';
-                                                }
+                    $.ajax({
+                        url:'updateLabel',
+                        data: JSON.stringify(rowData),
+                        //async : false,
+                        type:'POST',
+                        contentType: "application/json",
+                        dataType:'json',
+                        success: function(data) {
+                            if (data.msg != "ok") {
+                                alert('call updateLabel failed');
+                            }
 
-                                            },
-                                            error: function(data) {
-                                                color = 'active';
-                                            },
-                                    });
-                                    rowStyleMap[index] = color;
-                                    return {classes: color};
-                                } else {
-                                    color =  'active';
-                                    if (index in rowStyleMap) {
-                                        color = rowStyleMap[index];
-                                    }
-                                    return {classes: color};
-                                }
-
-                        }
+                        },
+                        error: function(data) {
+                                alert('call updateLabel failed');
+                        },
                     });
                 },
                 'click .checkBad': function (e, value, row, index) {
                     var curIndex = index;
                     var rowData = table.bootstrapTable('getData')[index];
                     rowData['label'] = -1;
-
-                    table.bootstrapTable('refreshOptions', {
-                        rowStyle: function(row, index) {
-                                if (index == curIndex) {
-                                    //submit data to mysql
-                                    color = 'danger';
-                                    $.ajax({
-                                            url:'updateLabel',
-                                            async : false,
-                                            data: JSON.stringify(rowData),
-                                            type:'POST',
-                                            contentType: "application/json",
-                                            dataType:'json',
-                                            success: function(data) {
-                                                if (data.msg != "ok") {
-                                                    color = 'active';
-                                                }
-
-                                            },
-                                            error: function(data) {
-                                                color = 'active';
-                                            },
-                                    });
-                                    rowStyleMap[index] = color;
-                                    return {classes: color};
-                                } else {
-                                    color =  'active';
-                                    if (index in rowStyleMap) {
-                                        color = rowStyleMap[index];
-                                    }
-                                    return {classes: color};
-                                }
-                        }
+                    table.bootstrapTable('updateRow', {
+                        index:index,
+                        row: row,
+                        _class: 'danger'
                     });
+
+                    $.ajax({
+                        url:'updateLabel',
+                        //async : false,
+                        data: JSON.stringify(rowData),
+                        type:'POST',
+                        contentType: "application/json",
+                        dataType:'json',
+                        success: function(data) {
+                            if (data.msg != "ok") {
+                                alert('call updateLabel failed');
+                            }
+
+                        },
+                        error: function(data) {
+                            alert('call updateLabel failed');
+                        },
+                    });
+
                 }
             };
             $('#insertMutex').click(function(event) {
@@ -247,12 +226,6 @@
                             if (data.msg == "ok") {
                                 rowStyleMap = {}
                                 var table = $('#label');
-                                table.bootstrapTable('refreshOptions', {
-                                        rowStyle: function(row, index) {
-                                                return {}
-                                        }
-                                });
-                     
                                 table.bootstrapTable('removeAll');
                                 table.bootstrapTable('append', data.res);
                             } else {
