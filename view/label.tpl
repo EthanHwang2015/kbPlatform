@@ -32,7 +32,7 @@
   <body>
     <div class="container">
     <div class="row">
-      <div class="col-md-10">
+      <div class="col-md-11">
         <div class="col-md-10">
             <label> class</label>
             <input id='classInput' type="text" placeholder="发烧"> </input>
@@ -42,7 +42,7 @@
             <input id='sourceInput' type="text" placeholder="百度"> </input>
             <button id='filter' type="button" class="btn btn-primary btn-sm">Filter</button>
         </div>
-        <div class="col-md-9"> 
+        <div class="col-md-11"> 
             <table id="label"
                    data-pagination="true">
             </table>

@@ -27,7 +27,11 @@
                 <div class="panel-heading">
                     <a href='label'><h3 class="panel-title">标注语料</h3></a>
                 </div>
-
+            </div>
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    <a href='inputCase'><h3 class="panel-title">病例结构化处理</h3></a>
+                </div>
             </div>
           </div>
         </div>

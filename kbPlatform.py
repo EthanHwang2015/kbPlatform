@@ -1,6 +1,7 @@
 #encoding=utf8
 # -*- coding: utf-8 -*-
 import sys
+import os
 reload(sys)
 sys.setdefaultencoding('utf-8')
 #sys.path.append("../mining/entity_tag/src/")
@@ -9,13 +10,22 @@ import json
 import commands
 from Mysql import Mysql, MySQLdb
 from NodeTree import NodeTree
+from config import Config
 import traceback
+import hashlib
+import httplib
 
-MYSQL_HOST = 'localhost'
-USER = 'healthai'
-PASSWD='123456'
-#etagger = None
+config = Config("./conf/kbplatform.conf")
+MYSQL_HOST = config.get("mysql", "host")
+USER = config.get("mysql", "user")
+PASSWD = config.get("mysql", "passwd")
+etaggerHost = config.get("etagger", "host")
+etaggerPort= int(config.get("etagger", "port"))
 
+
+@route('/inputCase')
+def index():
+    return template('view/input_case')
 
 @route('/')
 def index():
@@ -29,6 +39,28 @@ def index():
 def index():
     return template('view/label')
 
+@route('/processCase', method='POST')
+def index():
+    input = request.json
+    txt = input['txt']
+    res = {}
+    md5 = hashlib.md5()
+    md5.update(txt)
+    out = '/tmp/'+md5.hexdigest()
+    #cmd = 'python /home/yongsheng/EMR_search_demo/mining/entity_tag/src/entity_tag_service.py \'%s\' %s' %(txt, out)
+    #os.system(cmd)
+    """
+    send request to search module
+    """
+    requests = {'input':txt, 'output':os.getcwd() + '/' + out}
+    headers = {"Content-type": "application/json"}
+    httpClient = httplib.HTTPConnection(etaggerHost, etaggerPort, timeout=30)
+    httpClient.request("POST", "/etagger", json.dumps(requests), headers)
+    response = httpClient.getresponse()
+    httpClient.close()
+    res['html'] = out
+    return {"msg":"ok", "res":res} 
+ 
 @route('/filter', method='POST')
 def index():
     input = request.json
@@ -128,8 +160,6 @@ def index():
             rows = Mysql('healthai', host=MYSQL_HOST, user=USER, passwd=PASSWD).execute(sql)
         except MySQLdb.Error, e:
             print traceback.format_exc()
-
-
 
     return {'msg':'ok'}
 
@@ -282,7 +312,12 @@ def server_static(filePath):
 def server_static(filePath):
     return static_file(filePath, root='./bootstrap-table/')
 
+@route('/tmp/<filePath:path>')
+def server_static(filePath):
+    return static_file(filePath, root='./tmp/')
+
+
 
 
 if __name__ == "__main__":
-    run(host='192.168.1.14', port=8090)
+    run(host='0.0.0.0', port=8090)

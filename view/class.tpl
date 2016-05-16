@@ -381,7 +381,7 @@
             };
             $('#insertMutex').click(function(event) {
                 var $table = $('#mutexTable');
-                $table.bootstrapTable('append', 
+                $table.bootstrapTable('prepend', 
                         {
                             mutex: 'new',
                         }
@@ -389,7 +389,7 @@
             });
             $('#insertTerm').click(function(event) {
                 var $table = $('#termTable');
-                $table.bootstrapTable('append', 
+                $table.bootstrapTable('prepend', 
                         {
                             term: 'new',
                         }
@@ -397,7 +397,7 @@
             });
             $('#insertSeed').click(function(event) {
                 var $table = $('#seedTable');
-                $table.bootstrapTable('append', 
+                $table.bootstrapTable('prepend', 
                         {
                             seed: 'new',
                         }
